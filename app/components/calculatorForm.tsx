@@ -1,11 +1,13 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const CalculatorForm = () => {
   const [principal, setPrincipal] = useState<string | number>('');
   const [percentage, setPercentage] = useState<string | number>('');
   const [days, setDays] = useState<string | number>('');
   const [finalAmount, setFinalAmount] = useState<number | undefined>();
+  const [wFee, setWFee] = useState<string | undefined>();
+  const [withdrawalAmount, setWithdrawalAmount] = useState<string | undefined>();
 
   const calculateAmount = () => {
     compoundedAmount(Number(principal), Number(days));
@@ -19,6 +21,14 @@ const CalculatorForm = () => {
     }
   }
 
+  useEffect(() => {
+    setWFee(`${parseFloat(`${finalAmount}`) * 0.15}`);
+  }, [finalAmount])
+  
+  useEffect(() => {
+    setWithdrawalAmount(`${parseFloat(`${finalAmount}`) - Number(wFee)}`)
+  }, [wFee])
+  
   return (
     <div className="flex justify-center items-center">
       <div className="bg-white p-8 rounded shadow-lg text-center">
@@ -53,7 +63,13 @@ const CalculatorForm = () => {
         <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300" onClick={calculateAmount}>
           Calculate
         </button>
-        {finalAmount && <p className="text-black mt-4">Final Amount: <span className='text-red-500'>{parseFloat(`${finalAmount}`).toFixed(2)}</span></p>}
+        {finalAmount && 
+          <>
+            <p className="text-black mt-4">Final Amount: <span className='text-red-500'>{parseFloat(`${finalAmount}`).toFixed(2)}</span></p>
+            <p className="text-black mt-4">Withdrawal Fee(15%): <span className='text-red-500'>{parseFloat(`${wFee}`).toFixed(2)}</span></p>
+            <p className="text-black mt-4">Withdrawal Amount: <span className='text-red-500'>{parseFloat(`${withdrawalAmount}`).toFixed(2)}</span></p>
+          </>
+        }
       </div>
     </div>
   );
